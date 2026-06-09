@@ -1,0 +1,74 @@
+const int trigPin = 9;
+const int echoPin = 10;
+const int buzzer = 11;
+const int ledPin = 13;
+
+long duration;
+int distance;
+
+void setup() {
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  pinMode(buzzer, OUTPUT);
+  pinMode(ledPin, OUTPUT);
+
+  digitalWrite(buzzer, LOW);
+  digitalWrite(ledPin, LOW);
+
+  Serial.begin(9600);
+}
+
+void loop() {
+
+  // phát sóng
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+
+  digitalWrite(trigPin, LOW);
+
+  // timeout 30ms
+  duration = pulseIn(echoPin, HIGH, 30000);
+
+  // mất tín hiệu
+  if(duration == 0){
+    Serial.println("No Signal");
+
+    digitalWrite(buzzer, LOW);
+    digitalWrite(ledPin, LOW);
+
+    delay(100);
+    return;
+  }
+
+  // tính khoảng cách
+  distance = duration * 0.034 / 2;
+
+  // bỏ giá trị lỗi
+  if(distance > 400){
+    Serial.println("Out of range");
+
+    digitalWrite(buzzer, LOW);
+    digitalWrite(ledPin, LOW);
+
+    delay(100);
+    return;
+  }
+
+  Serial.print("Distance: ");
+  Serial.println(distance);
+
+  // cảnh báo
+  if(distance <= 15){
+    digitalWrite(buzzer, HIGH);
+    digitalWrite(ledPin, HIGH);
+  }
+  else{
+    digitalWrite(buzzer, LOW);
+    digitalWrite(ledPin, LOW);
+  }
+
+  delay(100);
+}
